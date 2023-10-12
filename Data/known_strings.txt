@@ -1,0 +1,2 @@
+/bin/ls evil EviLs
+/usr/bin/ls evil EviLs
