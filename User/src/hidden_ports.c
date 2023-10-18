@@ -70,7 +70,7 @@ int port_is_visible(int port, char* protocol) {
     @return non-zero value if true
 */
 int tcp4_port_is_hidden(int port) {
-    int socket, hidden = 0;
+    int sock, hidden = 0;
     struct sockaddr_in addr;
     errno = 0;
 
@@ -78,15 +78,15 @@ int tcp4_port_is_hidden(int port) {
     addr.sin_addr.s_addr = INADDR_ANY;
     addr.sin_port = htons(port);
 
-    socket = socket(AF_INET, SOCK_STREAM, 0);
+    sock = socket(AF_INET, SOCK_STREAM, 0);
 
-    if (socket < 0) {
+    if (sock < 0) {
         ERROR("Failed to create socket for tcp4 port %i", port)
     } else {
-        if (bind(socket, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+        if (bind(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
             if (errno == EADDRINUSE) {
                 if (port_is_visible(port, "t4") == 0) {
-                    if (bind(socket, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+                    if (bind(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
                         if (errno == EADDRINUSE) {
                             hidden = 1;
                         }
@@ -96,10 +96,10 @@ int tcp4_port_is_hidden(int port) {
                 }
             }
         } else {
-            listen(socket, 1);
+            listen(sock, 1);
             if (errno == EADDRINUSE) {
                 if (port_is_visible(port, "t4") == 0) {
-                    listen(socket, 1);
+                    listen(sock, 1);
                     if (errno == EADDRINUSE) {
                         hidden = 1;
                     }
@@ -108,7 +108,7 @@ int tcp4_port_is_hidden(int port) {
         }
     }
 
-    close(socket);
+    close(sock);
     return hidden;
 }
 
@@ -119,7 +119,7 @@ int tcp4_port_is_hidden(int port) {
     @return non-zero value if true
 */
 int tcp6_port_is_hidden(int port) {
-    int socket, hidden = 0, opt = 1;
+    int sock, hidden = 0, opt = 1;
     struct sockaddr_in6 addr;
     errno = 0;
 
@@ -127,16 +127,16 @@ int tcp6_port_is_hidden(int port) {
     addr.sin6_addr = in6addr_any;
     addr.sin6_port = htons(port);
 
-    socket = socket(AF_INET6, SOCK_STREAM, 0);
-    setsockopt(socket, IPPROTO_IPV6, IPV6_V6ONLY, (char *)&opt, sizeof(opt));
+    sock = socket(AF_INET6, SOCK_STREAM, 0);
+    setsockopt(sock, IPPROTO_IPV6, IPV6_V6ONLY, (char *)&opt, sizeof(opt));
 
-    if (socket < 0) {
+    if (sock < 0) {
         ERROR("Failed to create socket for tcp6 port %i", port)
     } else {
-        if (bind(socket, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+        if (bind(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
             if (errno == EADDRINUSE) {
                 if (port_is_visible(port, "t6") == 0) {
-                    if (bind(socket, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+                    if (bind(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
                         if (errno == EADDRINUSE) {
                             hidden = 1;
                         }
@@ -146,10 +146,10 @@ int tcp6_port_is_hidden(int port) {
                 }
             }
         } else {
-            listen(socket, 1);
+            listen(sock, 1);
             if (errno == EADDRINUSE) {
                 if (port_is_visible(port, "t6") == 0) {
-                    listen(socket, 1);
+                    listen(sock, 1);
                     if (errno == EADDRINUSE) {
                         hidden = 1;
                     }
@@ -158,7 +158,7 @@ int tcp6_port_is_hidden(int port) {
         }
     }
 
-    close(socket);
+    close(sock);
     return hidden;
 }
 
@@ -169,7 +169,7 @@ int tcp6_port_is_hidden(int port) {
     @return non-zero value if true
 */
 int udp4_port_is_hidden(int port) {
-    int socket, hidden = 0;
+    int sock, hidden = 0;
     struct sockaddr_in addr;
     errno = 0;
 
@@ -177,15 +177,15 @@ int udp4_port_is_hidden(int port) {
     addr.sin_addr.s_addr = INADDR_ANY;
     addr.sin_port = htons(port);
 
-    socket = socket(AF_INET, SOCK_DGRAM, 0);
+    sock = socket(AF_INET, SOCK_DGRAM, 0);
 
-    if (socket < 0) {
+    if (sock < 0) {
         ERROR("Failed to create socket for udp4 port %i", port)
     } else {
-        if (bind(socket, (struct sockaddr *)&addr, sizeof(addr)) != 0) {
+        if (bind(sock, (struct sockaddr *)&addr, sizeof(addr)) != 0) {
             if (errno == EADDRINUSE) {
                 if (port_is_visible(port, "u4") == 0) {
-                    if (bind(socket, (struct sockaddr *)&addr, sizeof(addr)) != 0) {
+                    if (bind(sock, (struct sockaddr *)&addr, sizeof(addr)) != 0) {
                         if (errno == EADDRINUSE) {
                             hidden = 1;
                         }
@@ -197,7 +197,7 @@ int udp4_port_is_hidden(int port) {
         }
     }
 
-    close(socket);
+    close(sock);
     return hidden;
 }
 
@@ -208,7 +208,7 @@ int udp4_port_is_hidden(int port) {
     @return non-zero value if true
 */
 int udp6_port_is_hidden(int port) {
-    int socket, hidden = 0, opt = 1;
+    int sock, hidden = 0, opt = 1;
     struct sockaddr_in6 addr;
     errno = 0;
 
@@ -216,16 +216,16 @@ int udp6_port_is_hidden(int port) {
     addr.sin6_addr = in6addr_any;
     addr.sin6_port = htons(port);
 
-    socket = socket(AF_INET6, SOCK_DGRAM, 0);
-    setsockopt(socket, IPPROTO_IPV6, IPV6_V6ONLY, (char *)&opt, sizeof(opt));
+    sock = socket(AF_INET6, SOCK_DGRAM, 0);
+    setsockopt(sock, IPPROTO_IPV6, IPV6_V6ONLY, (char *)&opt, sizeof(opt));
 
-    if (socket < 0) {
+    if (sock < 0) {
         ERROR("Failed to create socket for udp6 port %i", port)
     } else {
-        if (bind(socket, (struct sockaddr *)&addr, sizeof(addr)) != 0) {
+        if (bind(sock, (struct sockaddr *)&addr, sizeof(addr)) != 0) {
             if (errno == EADDRINUSE) {
                 if (port_is_visible(port, "u6") == 0) {
-                    if (bind(socket, (struct sockaddr *)&addr, sizeof(addr)) != 0) {
+                    if (bind(sock, (struct sockaddr *)&addr, sizeof(addr)) != 0) {
                         if (errno == EADDRINUSE) {
                             hidden = 1;
                         }
@@ -237,7 +237,7 @@ int udp6_port_is_hidden(int port) {
         }
     }
 
-    close(socket);
+    close(sock);
     return hidden;
 }
 
